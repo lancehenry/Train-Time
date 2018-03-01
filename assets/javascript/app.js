@@ -37,7 +37,7 @@ $("#submitBtn").on("click", function (event) {
 
 
     // Calculate Minutes Away time
-    
+
 
 
 
@@ -61,6 +61,21 @@ $("#submitBtn").on("click", function (event) {
 // Firebase watcher + initial loader
 database.ref().on("child_added", function (childSnapshot) {
 
+    // Change the HTML to reflect
+    var sv = childSnapshot.val();
+
+    var html =
+        '<tr class="test">' +
+        '<td>' + sv.name + '</td>' +
+        '<td>' + sv.destination + '</td>' +
+        '<td>' + sv.frequency + '</td>' +
+        // '<td>$ ' + sv.nextArrival + '</td>' +
+        // '<td>$ ' + sv.minutesAway + '</td>' +
+        '</tr>';
+
+    $('#outPutRow').append(html);
+
+    // Log the values from firebase
     console.log(childSnapshot.val().name);
     console.log(childSnapshot.val().destination);
     console.log(childSnapshot.val().time);
@@ -71,8 +86,10 @@ database.ref().on("child_added", function (childSnapshot) {
     console.log("Errors handled: " + errorObject.code);
 });
 
+/*
 database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function (snapshot) {
 
+    // This is for only populating one child at a time
     // Change the HTML to reflect
     var sv = snapshot.val();
 
@@ -86,5 +103,5 @@ database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", functi
         '</tr>';
 
     $('#outPutRow').append(html);
-
 });
+*/
