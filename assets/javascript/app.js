@@ -18,8 +18,6 @@ var name;
 var destination;
 var trainTime;
 var tFrequency;
-var nextArrival;
-var minutesAway;
 
 $("#submitBtn").on("click", function (event) {
     event.preventDefault();
@@ -31,22 +29,24 @@ $("#submitBtn").on("click", function (event) {
     tFrequency = $("#trainFrequency").val().trim();
 
     // Calculate Next Arrival time
+    var firstTimeConverted = moment(trainTime, "HH:mm").subtract(1, "years");
 
+    var currentTime = moment();
 
+    var diffTime = moment().diff(firstTimeConverted, "minutes");
 
+    var tRemainder = diffTime % tFrequency;
 
+    var minutesAway = tFrequency - tRemainder;
 
-    // Calculate Minutes Away time
-
-
-
-
+    var nextArrival = moment().add(minutesAway, "minutes");
 
     // Log what you're storing from above
     console.log(name);
     console.log(destination);
     console.log(trainTime);
     console.log(tFrequency);
+    console.log(nextArrival);
 
     // Code for the push to firebase
     database.ref().push({
@@ -54,6 +54,8 @@ $("#submitBtn").on("click", function (event) {
         destination: destination,
         time: trainTime,
         frequency: tFrequency,
+        minutes: minutesAway,
+        arrival: nextArrival.toLocaleString(),
         dateAdded: firebase.database.ServerValue.TIMESTAMP
     });
 });
@@ -64,13 +66,15 @@ database.ref().on("child_added", function (childSnapshot) {
     // Change the HTML to reflect
     var sv = childSnapshot.val();
 
+    var nextTrainFormat = moment(sv.arrival).format("hh:mm");
+
     var html =
         '<tr class="test">' +
         '<td>' + sv.name + '</td>' +
         '<td>' + sv.destination + '</td>' +
         '<td>' + sv.frequency + '</td>' +
-        // '<td>$ ' + sv.nextArrival + '</td>' +
-        // '<td>$ ' + sv.minutesAway + '</td>' +
+        '<td>' + nextTrainFormat + '</td>' +
+        '<td>' + sv.minutes + '</td>' +
         '</tr>';
 
     $('#outPutRow').append(html);
@@ -80,6 +84,8 @@ database.ref().on("child_added", function (childSnapshot) {
     console.log(childSnapshot.val().destination);
     console.log(childSnapshot.val().time);
     console.log(childSnapshot.val().frequency);
+    console.log(childSnapshot.val().arrival);
+    console.log(childSnapshot.val().minutes);
 
 // Handles the errors
 }, function (errorObject) {
