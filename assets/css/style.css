@@ -1,14 +1,14 @@
 .container .jumbotron {
-    background-color: #3f002b;
+    background-color: #172c39;
 }
 
 .jumbotron .heading {
     font-family: "Mukta Mahee", sans-serif;
-    color: #fff;
+    color: #e5dfd4;
     margin-left: 0.3em;
     font-size: 4em;
 }
 
 .jumbotron .fa-clock {
-    color: #fff;
+    color: #e5dfd4;
 }
