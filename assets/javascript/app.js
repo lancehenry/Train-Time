@@ -28,25 +28,29 @@ $("#submitBtn").on("click", function (event) {
     trainTime = $("#trainTime").val().trim();
     tFrequency = $("#trainFrequency").val().trim();
 
-    // Calculate Next Arrival time
+    // First Time Converted (pushed back 1 year to make sure it comes before current time)
     var firstTimeConverted = moment(trainTime, "HH:mm").subtract(1, "years");
+    console.log(firstTimeConverted);
 
+    // Current Time
     var currentTime = moment();
+    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
 
+    // Difference between Current Time and First Time Converted
     var diffTime = moment().diff(firstTimeConverted, "minutes");
+    console.log("DIFFERENCE IN TIME: " + diffTime);
 
+    // Time apart (remainder)
     var tRemainder = diffTime % tFrequency;
+    console.log(tRemainder);
 
+    // Minutes until next train
     var minutesAway = tFrequency - tRemainder;
+    console.log("MINUTES TILL TRAIN: " + minutesAway);
 
+    // Next train arrival time
     var nextArrival = moment().add(minutesAway, "minutes");
-
-    // Log what you're storing from above
-    console.log(name);
-    console.log(destination);
-    console.log(trainTime);
-    console.log(tFrequency);
-    console.log(nextArrival);
+    console.log("ARRIVAL TIME: " + moment(nextArrival).format("hh:mm:"));
 
     // Code for the push to firebase
     database.ref().push({
@@ -80,6 +84,7 @@ database.ref().on("child_added", function (childSnapshot) {
     $('#outPutRow').append(html);
 
     // Log the values from firebase
+    console.log("------ VALUES FROM FIREBASE -------");
     console.log(childSnapshot.val().name);
     console.log(childSnapshot.val().destination);
     console.log(childSnapshot.val().time);
@@ -91,23 +96,3 @@ database.ref().on("child_added", function (childSnapshot) {
 }, function (errorObject) {
     console.log("Errors handled: " + errorObject.code);
 });
-
-/*
-database.ref().orderByChild("dateAdded").limitToLast(1).on("child_added", function (snapshot) {
-
-    // This is for only populating one child at a time
-    // Change the HTML to reflect
-    var sv = snapshot.val();
-
-    var html =
-        '<tr class="test">' +
-        '<td>' + sv.name + '</td>' +
-        '<td>' + sv.destination + '</td>' +
-        '<td>' + sv.frequency + '</td>' +
-        // '<td>$ ' + sv.nextArrival + '</td>' +
-        // '<td>$ ' + sv.minutesAway + '</td>' +
-        '</tr>';
-
-    $('#outPutRow').append(html);
-});
-*/
