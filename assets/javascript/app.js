@@ -13,93 +13,85 @@ firebase.initializeApp(config);
 // Variable for talking to the database
 var database = firebase.database();
 
-// Variables to store data
-var name;
-var destination;
-var trainTime;
-var tFrequency;
-
+// Capture button click
 $("#submitBtn").on("click", function (event) {
     event.preventDefault();
 
     // Store the most recent train information entered
-    name = $("#trainName").val().trim();
-    destination = $("#trainDestination").val().trim();
-    trainTime = $("#trainTime").val().trim();
-    tFrequency = $("#trainFrequency").val().trim();
-
-    // First Time Converted (pushed back 1 year to make sure it comes before current time)
-    var firstTimeConverted = moment(trainTime, "HH:mm").subtract(1, "years");
-    console.log(firstTimeConverted);
-
-    // Current Time
-    var currentTime = moment();
-    console.log("CURRENT TIME: " + moment(currentTime).format("hh:mm"));
-
-    // Difference between Current Time and First Time Converted
-    var diffTime = moment().diff(firstTimeConverted, "minutes");
-    console.log("DIFFERENCE IN TIME: " + diffTime);
-
-    // Time apart (remainder)
-    var tRemainder = diffTime % tFrequency;
-    console.log(tRemainder);
-
-    // Minutes until next train
-    var minutesAway = tFrequency - tRemainder;
-    console.log("MINUTES TILL TRAIN: " + minutesAway);
-
-    // Next train arrival time
-    var nextArrival = moment().add(minutesAway, "minutes");
-    console.log("ARRIVAL TIME: " + moment(nextArrival).format("hh:mm"));
+    var name = $("#name-input").val().trim();
+    var destination = $("#dest-input").val().trim();
+    var tTime = $("#time-input").val().trim();
+    var tFreq = $("#freq-input").val().trim();
 
     // Creates local "temporary" object for holding train data
     var newTrain = {
         name: name,
-        destination: destination,
-        time: trainTime,
-        frequency: tFrequency,
-        minutes: minutesAway,
-        arrival: nextArrival.toLocaleString(),
-        dateAdded: firebase.database.ServerValue.TIMESTAMP
+        dest: destination,
+        time: tTime,
+        freq: tFreq,
+        timeAdded: firebase.database.ServerValue.TIMESTAMP
     };
 
     // Uploads train data to the firebase
     database.ref().push(newTrain);
 
     // Clears all of the input fields
-    $("#trainName").val("");
-    $("#trainDestination").val("");
-    $("#trainTime").val("");
-    $("#trainFrequency").val("");
+    $("#name-input").val("");
+    $("#dest-input").val("");
+    $("#time-input").val("");
+    $("#freq-input").val("");
 });
 
 // Firebase watcher + initial loader
 database.ref().on("child_added", function (childSnapshot) {
 
     // Change the HTML to reflect
-    var sv = childSnapshot.val();
+    var name = childSnapshot.val().name;
+    var dest = childSnapshot.val().dest;
+    var time = childSnapshot.val().time;
+    var freq = childSnapshot.val().freq;
 
-    var nextTrainFormat = moment(sv.arrival).format("hh:mm");
+    // Current Time
+    var currentTime = moment();
 
+    // First Time Converted (pushed back 1 year to make sure it comes before current time)
+    var firstTimeConverted = moment(childSnapshot.val().time, "HH:mm").subtract(1, "years");
+
+    var trainTime = moment(firstTimeConverted).format("HH:mm");
+
+    // Difference between Current Time and First Time Converted
+    var convertTime = moment(trainTime, "HH:mm").subtract(1, "years");
+    var diffTime = moment().diff(moment(convertTime), "minutes");
+
+    // Time apart (remainder)
+    var tRemainder = diffTime % freq;
+
+    // Minutes until next train
+    var minutesAway = freq - tRemainder;
+
+    // Next train arrival time
+    var nextArrival = moment().add(minutesAway, "minutes");
+
+    // Change the HTML to reflect
     var html =
         '<tr class="test">' +
-        '<td>' + sv.name + '</td>' +
-        '<td>' + sv.destination + '</td>' +
-        '<td>' + sv.frequency + '</td>' +
-        '<td>' + nextTrainFormat + '</td>' +
-        '<td>' + sv.minutes + '</td>' +
+        '<td>' + childSnapshot.val().name + '</td>' +
+        '<td>' + childSnapshot.val().dest + '</td>' +
+        '<td>' + childSnapshot.val().freq + '</td>' +
+        '<td>' + moment(nextArrival).format("HH:mm") + '</td>' +
+        '<td>' + minutesAway + '</td>' +
         '</tr>';
 
     $('#outPutRow').append(html);
 
     // Log the values from firebase
     console.log("------ VALUES FROM FIREBASE -------");
-    console.log(childSnapshot.val().name);
-    console.log(childSnapshot.val().destination);
-    console.log(childSnapshot.val().time);
-    console.log(childSnapshot.val().frequency);
-    console.log(childSnapshot.val().arrival);
-    console.log(childSnapshot.val().minutes);
+    console.log("TRAIN NAME: " + childSnapshot.val().name);
+    console.log("DESTINATION: " + childSnapshot.val().dest);
+    console.log("FIRST TRAIN: " + childSnapshot.val().time);
+    console.log("FREQUENCY: " + childSnapshot.val().freq);
+    console.log("NEXT ARRIVAL: " + moment(nextArrival).format("HH:mm"));
+    console.log("MINUTES AWAY: " + minutesAway);
 
 // Handles the errors
 }, function (errorObject) {
