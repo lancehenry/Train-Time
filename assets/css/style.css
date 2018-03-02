@@ -1,14 +1,31 @@
-.container .jumbotron {
-    background-color: #172c39;
+/*********************************
+MY CSS STYLES
+*********************************/
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #0a2127;
+}
+
+.jumbotron {
+    background-image: url("../images/train-header.jpg");
+    padding: 10% 0;
+    height: 100%;
+    width: 100%;
+    background-size: cover;
 }
 
 .jumbotron .heading {
     font-family: "Mukta Mahee", sans-serif;
-    color: #e5dfd4;
+    color: #fff;
     margin-left: 0.3em;
-    font-size: 4em;
+    font-size: 5em;
 }
 
 .jumbotron .fa-clock {
-    color: #e5dfd4;
+    color: #fff;
 }
