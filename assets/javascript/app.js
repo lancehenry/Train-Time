@@ -55,9 +55,9 @@ database.ref().on("child_added", function (childSnapshot) {
     var currentTime = moment();
 
     // First Time Converted (pushed back 1 year to make sure it comes before current time)
-    var firstTimeConverted = moment(childSnapshot.val().time, "HH:mm").subtract(1, "years");
+    var firstTimeConverted = moment(childSnapshot.val().time, "hh:mm").subtract(1, "years");
 
-    var trainTime = moment(firstTimeConverted).format("HH:mm");
+    var trainTime = moment(firstTimeConverted).format("hh:mm");
 
     // Difference between Current Time and First Time Converted
     var convertTime = moment(trainTime, "HH:mm").subtract(1, "years");
@@ -78,7 +78,7 @@ database.ref().on("child_added", function (childSnapshot) {
         '<td>' + childSnapshot.val().name + '</td>' +
         '<td>' + childSnapshot.val().dest + '</td>' +
         '<td>' + childSnapshot.val().freq + '</td>' +
-        '<td>' + moment(nextArrival).format("HH:mm") + '</td>' +
+        '<td>' + moment(nextArrival).format("hh:mm a") + '</td>' +
         '<td>' + minutesAway + '</td>' +
         '</tr>';
 
@@ -90,7 +90,7 @@ database.ref().on("child_added", function (childSnapshot) {
     console.log("DESTINATION: " + childSnapshot.val().dest);
     console.log("FIRST TRAIN: " + childSnapshot.val().time);
     console.log("FREQUENCY: " + childSnapshot.val().freq);
-    console.log("NEXT ARRIVAL: " + moment(nextArrival).format("HH:mm"));
+    console.log("NEXT ARRIVAL: " + moment(nextArrival).format("hh:mm a"));
     console.log("MINUTES AWAY: " + minutesAway);
 
 // Handles the errors
